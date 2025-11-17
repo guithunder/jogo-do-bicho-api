@@ -1,50 +1,29 @@
-import { supabase } from "../supabase.js";
-import bcrypt from "bcrypt";
+// src/controllers/register.controller.js
+import { supabase } from "../config/supabase.js";
 
-export const register = async (req, res) => {
+export async function register(req, res) {
   try {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
-    // Verifica campos
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "Preencha todos os campos" });
-    }
+    if (!email || !password)
+      return res.status(400).json({ error: "Email e senha são obrigatórios." });
 
-    // Verifica se email já existe
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .single();
-
-    if (existingUser) {
-      return res.status(400).json({ error: "Email já cadastrado" });
-    }
-
-    // Criptografar senha
-    const hashed = await bcrypt.hash(password, 10);
-
-    // Criar usuário no Supabase
-    const { data, error } = await supabase
-      .from("users")
-      .insert([{ name, email, password: hashed }])
-      .select()
-      .single();
+    // Cria usuário no Supabase
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
 
     if (error) {
-      return res.status(500).json({ error: "Erro ao registrar usuário" });
+      return res.status(400).json({ error: error.message });
     }
 
     return res.json({
-      message: "Usuário registrado com sucesso",
-      user: {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-      },
+      message: "Usuário registrado com sucesso!",
+      user: data.user
     });
+
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro interno" });
+    return res.status(500).json({ error: err.message });
   }
-};
+}
