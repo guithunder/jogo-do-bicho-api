@@ -22,7 +22,7 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: "Email já cadastrado" });
     }
 
-    // 1️⃣ Cria usuário no AUTH
+    // Cria usuário no AUTH
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -32,15 +32,15 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: authError.message });
     }
 
-    // 2️⃣ Criptografa a senha para salvar na tabela users
+    // Criptografa a senha para salvar na tabela users
     const hashed = await bcrypt.hash(password, 10);
 
-    // 3️⃣ Registra na sua tabela users
+    // Registra na sua tabela users
     const { data, error } = await supabase
       .from("users")
       .insert([
         {
-          auth_id: authData.user.id, // <-- IMPORTANTE
+          auth_id: authData.user.id, 
           name,
           email,
           password: hashed,
