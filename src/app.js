@@ -3,6 +3,7 @@ import cors from "cors";
 
 import betsRoutes from "./routes/bets.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import registerRoutes from "./routes/register.routes.js"; // 
 import { supabase } from "./config/supabase.js";
 
 const app = express();
@@ -10,8 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rotas de autenticação (login / signup)
+// Rotas de autenticação (login)
 app.use("/auth", authRoutes);
+
+// Rota de registro (signup)
+app.use("/auth/register", registerRoutes); 
 
 // Rotas de apostas
 app.use("/bets", betsRoutes);
