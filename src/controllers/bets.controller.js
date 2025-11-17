@@ -19,19 +19,27 @@ export async function create(req, res) {
     return res.status(400).json({ error: "Campos obrigatórios faltando." });
 
   const { data, error } = await service.createBet(req.body, req.user.id);
-
   if (error) return res.status(400).json(error);
+
   res.status(201).json(data);
 }
 
 export async function update(req, res) {
-  const { data, error } = await service.updateBet(req.params.id, req.body, req.user.id);
+  const { data, error } = await service.updateBet(
+    req.params.id,
+    req.body,
+    req.user.id
+  );
+
   if (error) return res.status(400).json(error);
+
   res.json(data);
 }
 
 export async function remove(req, res) {
   const { error } = await service.deleteBet(req.params.id, req.user.id);
+
   if (error) return res.status(400).json(error);
+
   res.json({ message: "Aposta removida." });
 }

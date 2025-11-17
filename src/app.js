@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
+
 import betsRoutes from "./routes/bets.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { supabase } from "./config/supabase.js";
 
 const app = express();
@@ -8,7 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rotas da sua API
+// Rotas de autenticação (login / signup)
+app.use("/auth", authRoutes);
+
+// Rotas de apostas
 app.use("/bets", betsRoutes);
 
 // Rota principal
