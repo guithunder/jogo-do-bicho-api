@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 
 import betsRoutes from "./routes/bets.routes.js";
-import authRoutes from "./routes/auth.routes.js";
-import registerRoutes from "./routes/register.routes.js"; // 
+import authRoutes from "./routes/auth.routes.js"; // (se existir e for usado)
+import registerRoutes from "./routes/register.routes.js"; 
+import loginRoutes from "./routes/login.routes.js";
 import { supabase } from "./config/supabase.js";
 
 const app = express();
@@ -11,21 +12,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rotas de autenticação (login)
-app.use("/auth", authRoutes);
+// ROTAS DE AUTENTICAÇÃO
+app.use("/auth/register", registerRoutes);
+app.use("/auth/login", loginRoutes);
 
-// Rota de registro (signup)
-app.use("/auth/register", registerRoutes); 
+// Se você realmente usa /auth para outra coisa, mantém aqui:
+app.use("/auth", authRoutes); // opcional — só se existir mesmo
 
-// Rotas de apostas
+// ROTAS DE APOSTAS
 app.use("/bets", betsRoutes);
 
-// Rota principal
+// ROTA PRINCIPAL
 app.get("/", (req, res) => {
   res.json({ message: "API Jogo do Bicho funcionando!" });
 });
 
-// Rota de teste do Supabase
+// ROTA DE TESTE DO SUPABASE
 app.get("/test-supabase", async (req, res) => {
   try {
     const { data, error } = await supabase.from("bets").select("*").limit(1);
