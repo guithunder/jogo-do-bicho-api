@@ -1,24 +1,30 @@
-import { supabase } from "../config/supabase.js";
+// src/middlewares/auth.js
+import jwt from "jsonwebtoken";
 
 export async function auth(req, res, next) {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader) {
       return res.status(401).json({ error: "Token não fornecido." });
     }
 
-    // Aqui validamos o token usando o Supabase
-    const { data, error } = await supabase.auth.getUser(token);
+    // Remove "Bearer "
+    const token = authHeader.replace("Bearer ", "").trim();
 
-    if (error || !data?.user) {
+    if (!token) {
       return res.status(401).json({ error: "Token inválido." });
     }
 
-    req.user = data.user;
+    // Valida o token usando seu JWT_SECRET
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Injeta os dados do usuário no request
+    req.user = decoded;
+
     next();
   } catch (err) {
     console.error("Erro no middleware auth:", err);
-    return res.status(500).json({ error: "Erro interno de autenticação." });
+    return res.status(401).json({ error: "Token inválido ou expirado." });
   }
 }
